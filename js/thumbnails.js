@@ -15,12 +15,14 @@ const onPicturesContainerElementClick = (evt) => {
     const targetPicture = pictures.filter((picture) => picture.id === pictureId)[0];
     openFullViewPopup(targetPicture);
   }
-
 };
 
 export const renderPictures = (data) => {
-  pictures = data.slice();
+  document
+    .querySelectorAll(PICTURE_SELECTOR)
+    .forEach((element) => element.remove());
 
+  pictures = data.slice();
   if (pictures) {
     picturesContainer.insertAdjacentHTML(
       'afterbegin',
