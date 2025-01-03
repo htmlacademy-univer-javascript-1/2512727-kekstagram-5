@@ -18,3 +18,5 @@ export const getRandomInteger = (a, b) => {
 export const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
 export const isEscapeKey = (evt) => evt.key === 'Escape';
+
+export const isImageFile = (file) => file && file.type.startsWith('image/');
