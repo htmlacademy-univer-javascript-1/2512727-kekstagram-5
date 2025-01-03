@@ -1,8 +1,10 @@
 import { initCreatePopup } from './create-picture-popup.js';
-import { getPictures } from './data.js';
 import { renderPictures } from './thumbnails.js';
+import { getData } from './api.js';
+import { showAlert } from './utils.js';
 
-const pictures = getPictures();
-renderPictures(pictures);
+getData()
+  .then((pictures) => renderPictures(pictures))
+  .catch((err) => showAlert(err.message));
 
 initCreatePopup();

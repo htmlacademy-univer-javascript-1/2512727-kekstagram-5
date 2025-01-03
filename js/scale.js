@@ -15,18 +15,14 @@ const setImageScale = (scale) => {
 
 const onZoomInClick = () => {
   const scale = parseNumber(scaleValue.value);
-  if (scale < Scale.MAX_SCALE) {
-    const newScale = Math.min(scale + Scale.STEP_SCALE, Scale.MAX_SCALE);
-    setImageScale(newScale);
-  }
+  const newScale = Math.min(scale + Scale.STEP_SCALE, Scale.MAX_SCALE);
+  setImageScale(newScale);
 };
 
 const onZoomOutClick = () => {
   const scale = parseNumber(scaleValue.value);
-  if (scale > Scale.MIN_SCALE) {
-    const newScale = Math.max(scale - Scale.STEP_SCALE, Scale.MIN_SCALE);
-    setImageScale(newScale);
-  }
+  const newScale = Math.max(scale - Scale.STEP_SCALE, Scale.MIN_SCALE);
+  setImageScale(newScale);
 };
 
 export const destroyScale = () => {
