@@ -5,8 +5,8 @@ import { COMMENTS_STEP } from './constants.js';
 let allComments = null;
 let commentsToShow = COMMENTS_STEP;
 
-const body = document.querySelector('body');
-const fullPicture = document.querySelector('.big-picture');
+const bodyElement = document.querySelector('body');
+const fullPicture = bodyElement.querySelector('.big-picture');
 const commentCount = fullPicture.querySelector('.social__comment-count');
 const commentList = fullPicture.querySelector('.social__comments');
 const commentsLoader = fullPicture.querySelector('.social__comments-loader');
@@ -37,32 +37,32 @@ const renderComments = () => {
   }
 };
 
-const closeFullViewPopup = () => {
-  allComments = null;
-  commentsToShow = COMMENTS_STEP;
-
-  fullPicture.classList.add('hidden');
-  commentCount.classList.add('hidden');
-  body.classList.remove('modal-open');
-
-  exitButton.removeEventListener('click', onCloseBtnClick);
-  document.removeEventListener('keydown', onDocumentEscKeydown);
-};
-
 const onShowMoreComments = () => {
   commentsToShow += COMMENTS_STEP;
   renderComments();
 };
 
-function onCloseBtnClick() {
+const onCloseBtnClick = () => {
   closeFullViewPopup();
-}
+};
 
-function onDocumentEscKeydown(evt) {
+const onDocumentEscKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
     closeFullViewPopup();
   }
+};
+
+function closeFullViewPopup() {
+  allComments = null;
+  commentsToShow = COMMENTS_STEP;
+
+  fullPicture.classList.add('hidden');
+  commentCount.classList.add('hidden');
+  bodyElement.classList.remove('modal-open');
+
+  exitButton.removeEventListener('click', onCloseBtnClick);
+  document.removeEventListener('keydown', onDocumentEscKeydown);
 }
 
 export const openFullViewPopup = (picture) => {
@@ -73,7 +73,7 @@ export const openFullViewPopup = (picture) => {
 
   fullPicture.classList.remove('hidden');
   commentCount.classList.remove('hidden');
-  body.classList.add('modal-open');
+  bodyElement.classList.add('modal-open');
 
   exitButton.addEventListener('click', onCloseBtnClick);
   commentsLoader.addEventListener('click', onShowMoreComments);

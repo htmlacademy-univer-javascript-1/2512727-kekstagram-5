@@ -4,6 +4,14 @@ export const AVATAR_COUNT = 6;
 export const COMMENTS_COUNT = 30;
 export const COMMENTS_STEP = 5;
 
+export const MAX_COUNT_HASHTAG = 5;
+export const HASHTAG_REGEX = /^#[a-zа-яё0-9]{1,19}$/i;
+export const HashtagError = {
+  IS_NOT_VALID: 'Xештег не валиден',
+  IS_NOT_UNIQUE: 'Xештеги не должны совпадать',
+  IS_NOT_VALID_COUNT: `Xештегов должно быть не больше ${MAX_COUNT_HASHTAG}`,
+};
+
 export const PICTURE_DESCRIPTIONS = [
   'Закат на пляже',
   'Городская панорама ночью',
