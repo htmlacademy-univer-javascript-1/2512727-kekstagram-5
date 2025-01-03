@@ -1,22 +1,35 @@
-const pictureTemplate = document.querySelector('#picture').content;
-const pictures = document.querySelector('.pictures');
+import { openFullViewPopup } from './full-picture-popup.js';
+import { createPictureTemplate } from './templates.js';
 
-const createPicture = ({ url, description, likes, comments }) => {
-  const picture = pictureTemplate.cloneNode(true);
+const PICTURE_SELECTOR = '.picture';
+const PICTURES_SELECTOR = '.pictures';
 
-  picture.querySelector('.picture__img').src = url;
-  picture.querySelector('.picture__img').alt = description;
-  picture.querySelector('.picture__likes').textContent = likes;
-  picture.querySelector('.picture__comments').textContent = comments.length;
+let pictures = null;
+const picturesContainer = document.querySelector(PICTURES_SELECTOR);
 
-  return picture;
+const onPicturesContainerElementClick = (evt) => {
+  const targetElement = evt.target.closest(PICTURE_SELECTOR);
+
+  if (targetElement) {
+    const pictureId = +targetElement.dataset.id;
+    const targetPicture = pictures.filter((picture) => picture.id === pictureId)[0];
+    openFullViewPopup(targetPicture);
+  }
+
 };
 
 export const renderPictures = (data) => {
-  const picturesFragment = document.createDocumentFragment();
-  data.forEach((pictureData) =>
-    picturesFragment.appendChild(createPicture(pictureData))
-  );
+  pictures = data.slice();
 
-  pictures.appendChild(picturesFragment);
+  if (pictures) {
+    picturesContainer.insertAdjacentHTML(
+      'afterbegin',
+      pictures.map((picture) => createPictureTemplate(picture)).join('')
+    );
+
+    picturesContainer.addEventListener(
+      'click',
+      onPicturesContainerElementClick
+    );
+  }
 };
