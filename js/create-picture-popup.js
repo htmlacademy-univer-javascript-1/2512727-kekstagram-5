@@ -1,9 +1,12 @@
+import { initScale, destroyScale } from './scale.js';
+import { initEffectsSlider, destroyEffectsSlider } from './effects-slider.js';
+
 import { isEscapeKey, isImageFile } from './utils.js';
-import { MAX_COUNT_HASHTAG, HashtagError, HASHTAG_REGEX } from './constants.js';
+import { MAX_COUNT_HASHTAG, MAX_COMMENT_SYMBOLS, HashtagError, HASHTAG_REGEX } from './constants.js';
 
 const bodyElement = document.querySelector('body');
 const formElement = bodyElement.querySelector('.img-upload__form');
-const formButton = bodyElement.querySelector('.img-upload__submit');
+const formButton = formElement.querySelector('.img-upload__submit');
 const fileInput = formElement.querySelector('.img-upload__input');
 const overlayElement = formElement.querySelector('.img-upload__overlay');
 const exitButton = overlayElement.querySelector('.img-upload__cancel');
@@ -24,6 +27,8 @@ const isUniqueValidHashtag = (value) => {
   const hashtags = splitHashtagInput(value).map((hastag) => hastag.toLowerCase());
   return hashtags.length === new Set(hashtags).size;
 };
+
+const isCountValidComment = (value) => value.length <= MAX_COMMENT_SYMBOLS;
 
 const initValidation = () => {
   formValidator = new Pristine(formElement, {
@@ -48,6 +53,12 @@ const initValidation = () => {
     hashtagsInput,
     isCountValidHashtag,
     HashtagError.IS_NOT_VALID_COUNT,
+  );
+
+  formValidator.addValidator(
+    commentInput,
+    isCountValidComment,
+    `Длина комментария не более ${MAX_COMMENT_SYMBOLS} символов`
   );
 };
 
@@ -85,6 +96,8 @@ const onFileInputChange = () => {
 function closeCreatePopup() {
   formValidator.reset();
   formElement.reset();
+  destroyScale();
+  destroyEffectsSlider();
 
   overlayElement.classList.add('hidden');
   bodyElement.classList.remove('modal-open');
@@ -101,6 +114,8 @@ function openCreatePopup () {
   bodyElement.classList.add('modal-open');
 
   initValidation();
+  initScale();
+  initEffectsSlider();
 
   formButton.addEventListener('click', onSubmitBtnClick);
   exitButton.addEventListener('click', onCloseBtnClick);
