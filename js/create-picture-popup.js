@@ -10,6 +10,8 @@ const formElement = bodyElement.querySelector('.img-upload__form');
 const formButton = formElement.querySelector('.img-upload__submit');
 const fileInput = formElement.querySelector('.img-upload__input');
 const overlayElement = formElement.querySelector('.img-upload__overlay');
+const mainImage = overlayElement.querySelector('.img-upload__preview img');
+const effectsPreviews = overlayElement.querySelectorAll('.effects__item .effects__preview');
 const exitButton = overlayElement.querySelector('.img-upload__cancel');
 const commentInput = overlayElement.querySelector('.text__description');
 const hashtagsInput = overlayElement.querySelector('.text__hashtags');
@@ -102,6 +104,10 @@ const onFormSubmit = (evt) => {
 const onFileInputChange = () => {
   const file = fileInput.files[0];
   if (isImageFile(file)) {
+    mainImage.src = URL.createObjectURL(file);
+    effectsPreviews.forEach((effect) => {
+      effect.style.backgroundImage = `url(${mainImage.src})`;
+    });
     openCreatePopup();
   } else {
     showErrorMessage();
