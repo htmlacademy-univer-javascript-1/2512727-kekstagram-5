@@ -7,18 +7,18 @@ import { sendData } from './api.js';
 
 const bodyElement = document.querySelector('body');
 const formElement = bodyElement.querySelector('.img-upload__form');
-const formButton = formElement.querySelector('.img-upload__submit');
-const fileInput = formElement.querySelector('.img-upload__input');
-const overlayElement = formElement.querySelector('.img-upload__overlay');
-const mainImage = overlayElement.querySelector('.img-upload__preview img');
-const effectsPreviews = overlayElement.querySelectorAll('.effects__item .effects__preview');
-const exitButton = overlayElement.querySelector('.img-upload__cancel');
-const commentInput = overlayElement.querySelector('.text__description');
-const hashtagsInput = overlayElement.querySelector('.text__hashtags');
+const formButtonElement = formElement.querySelector('.img-upload__submit');
+const fileInputElement = formElement.querySelector('.img-upload__input');
+const uploadOverlayElement = formElement.querySelector('.img-upload__overlay');
+const mainImageElement = uploadOverlayElement.querySelector('.img-upload__preview img');
+const effectsPreviewElements = uploadOverlayElement.querySelectorAll('.effects__item .effects__preview');
+const exitButtonElement = uploadOverlayElement.querySelector('.img-upload__cancel');
+const commentInputElement = uploadOverlayElement.querySelector('.text__description');
+const hashtagsInputElement = uploadOverlayElement.querySelector('.text__hashtags');
 
 let formValidator = null;
 
-const splitHashtagInput = (value) => value.trim().split(' ');
+const splitHashtagInput = (value) => value.trim().split(' ').filter(Boolean);
 
 const isValidHashtag = (value) => value
   ? splitHashtagInput(value).every((hashtag) => HASHTAG_REGEX.test(hashtag))
@@ -41,33 +41,33 @@ const initValidation = () => {
   });
 
   formValidator.addValidator(
-    hashtagsInput,
+    hashtagsInputElement,
     isValidHashtag,
     HashtagError.IS_NOT_VALID,
   );
 
   formValidator.addValidator(
-    hashtagsInput,
+    hashtagsInputElement,
     isUniqueValidHashtag,
     HashtagError.IS_NOT_UNIQUE,
   );
 
   formValidator.addValidator(
-    hashtagsInput,
+    hashtagsInputElement,
     isCountValidHashtag,
     HashtagError.IS_NOT_VALID_COUNT,
   );
 
   formValidator.addValidator(
-    commentInput,
+    commentInputElement,
     isCountValidComment,
     `Длина комментария не более ${MAX_COMMENT_SYMBOL} символов`
   );
 };
 
 const toggleSubmitButton = (isDisabled = false) => {
-  formButton.disabled = isDisabled;
-  formButton.textContent = isDisabled ? SubmitButtonText.SENDING : SubmitButtonText.DEFAULT;
+  formButtonElement.disabled = isDisabled;
+  formButtonElement.textContent = isDisabled ? SubmitButtonText.SENDING : SubmitButtonText.DEFAULT;
 };
 
 const onCloseBtnClick = () => {
@@ -75,13 +75,19 @@ const onCloseBtnClick = () => {
 };
 
 const onDocumentEscKeydown = (evt) => {
-  if (isEscapeKey(evt)) {
+  if (isEscapeKey(evt) && !evt.target.querySelector('.error')) {
     evt.preventDefault();
     closeCreatePopup();
   }
 };
 
-const onInputEscKeydown = (evt) => {
+const onCommentEscKeydown = (evt) => {
+  if (isEscapeKey(evt)) {
+    evt.stopPropagation();
+  }
+};
+
+const onHashtagEscKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.stopPropagation();
   }
@@ -101,12 +107,12 @@ const onFormSubmit = (evt) => {
   }
 };
 
-const onFileInputChange = () => {
-  const file = fileInput.files[0];
+const onFileChange = () => {
+  const file = fileInputElement.files[0];
   if (isImageFile(file)) {
-    mainImage.src = URL.createObjectURL(file);
-    effectsPreviews.forEach((effect) => {
-      effect.style.backgroundImage = `url(${mainImage.src})`;
+    mainImageElement.src = URL.createObjectURL(file);
+    effectsPreviewElements.forEach((effect) => {
+      effect.style.backgroundImage = `url(${mainImageElement.src})`;
     });
     openCreatePopup();
   } else {
@@ -121,18 +127,18 @@ function closeCreatePopup() {
   destroyScale();
   destroyEffectsSlider();
 
-  overlayElement.classList.add('hidden');
+  uploadOverlayElement.classList.add('hidden');
   bodyElement.classList.remove('modal-open');
 
   formElement.removeEventListener('submit', onFormSubmit);
-  exitButton.removeEventListener('click', onCloseBtnClick);
+  exitButtonElement.removeEventListener('click', onCloseBtnClick);
   document.removeEventListener('keydown', onDocumentEscKeydown);
-  commentInput.removeEventListener('keydown', onInputEscKeydown);
-  hashtagsInput.removeEventListener('keydown', onInputEscKeydown);
+  commentInputElement.removeEventListener('keydown', onCommentEscKeydown);
+  hashtagsInputElement.removeEventListener('keydown', onHashtagEscKeydown);
 }
 
 function openCreatePopup () {
-  overlayElement.classList.remove('hidden');
+  uploadOverlayElement.classList.remove('hidden');
   bodyElement.classList.add('modal-open');
 
   initValidation();
@@ -140,12 +146,12 @@ function openCreatePopup () {
   initEffectsSlider();
 
   formElement.addEventListener('submit', onFormSubmit);
-  exitButton.addEventListener('click', onCloseBtnClick);
+  exitButtonElement.addEventListener('click', onCloseBtnClick);
   document.addEventListener('keydown', onDocumentEscKeydown);
-  commentInput.addEventListener('keydown', onInputEscKeydown);
-  hashtagsInput.addEventListener('keydown', onInputEscKeydown);
+  commentInputElement.addEventListener('keydown', onCommentEscKeydown);
+  hashtagsInputElement.addEventListener('keydown', onHashtagEscKeydown);
 }
 
 export const initCreatePopup = () => {
-  fileInput.addEventListener('change', onFileInputChange);
+  fileInputElement.addEventListener('change', onFileChange);
 };
