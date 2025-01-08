@@ -7,9 +7,9 @@ const ERROR_BUTTON_SELECTOR = '.error__button';
 
 const bodyElement = document.querySelector('body');
 const successAlertTemplate = bodyElement.querySelector('#success').content.querySelector(SUCCESS_SELECTOR);
-const successAlert = successAlertTemplate.cloneNode(true);
+const successAlertElement = successAlertTemplate.cloneNode(true);
 const errorAlertTemplate = bodyElement.querySelector('#error').content.querySelector(ERROR_SELECTOR);
-const errorAlert = errorAlertTemplate.cloneNode(true);
+const errorAlertElement = errorAlertTemplate.cloneNode(true);
 
 const hideMessage = () => {
   const currentAlert =
@@ -19,7 +19,7 @@ const hideMessage = () => {
     currentAlert.querySelector(SUCCESS_BUTTON_SELECTOR) ||
     currentAlert.querySelector(ERROR_BUTTON_SELECTOR);
   currentAlert.remove();
-  exitButton.removeEventListener('click', hideMessage);
+  exitButton.removeEventListener('click', onMessageHide);
   document.removeEventListener('click', onOutsideClick);
   document.removeEventListener('keydown', onDocumentEscKeydown);
 };
@@ -27,10 +27,14 @@ const hideMessage = () => {
 const showMessage = (currentAlert, exitButtonClass) => {
   const exitButton = currentAlert.querySelector(exitButtonClass);
   bodyElement.append(currentAlert);
-  exitButton.addEventListener('click', hideMessage);
+  exitButton.addEventListener('click', onMessageHide);
   document.addEventListener('click', onOutsideClick);
   document.addEventListener('keydown', onDocumentEscKeydown);
 };
+
+function onMessageHide() {
+  hideMessage();
+}
 
 function onDocumentEscKeydown (evt) {
   if (isEscapeKey(evt)) {
@@ -47,9 +51,9 @@ function onOutsideClick (evt) {
 }
 
 export const showSuccessMessage = () => {
-  showMessage(successAlert, SUCCESS_BUTTON_SELECTOR);
+  showMessage(successAlertElement, SUCCESS_BUTTON_SELECTOR);
 };
 
 export const showErrorMessage = () => {
-  showMessage(errorAlert, ERROR_BUTTON_SELECTOR);
+  showMessage(errorAlertElement, ERROR_BUTTON_SELECTOR);
 };

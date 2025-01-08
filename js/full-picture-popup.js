@@ -1,43 +1,54 @@
 import { isEscapeKey } from './utils.js';
-import { createCommentTemplate } from './templates.js';
 import { COMMENTS_STEP } from './constants.js';
 
-let allComments = null;
+let comments = null;
 let commentsToShow = COMMENTS_STEP;
 
 const bodyElement = document.querySelector('body');
-const fullPicture = bodyElement.querySelector('.big-picture');
-const commentCount = fullPicture.querySelector('.social__comment-count');
-const commentList = fullPicture.querySelector('.social__comments');
-const commentsLoader = fullPicture.querySelector('.social__comments-loader');
-const exitButton = fullPicture.querySelector('.big-picture__cancel');
+const fullPictureElement = bodyElement.querySelector('.big-picture');
+const commentCountElement = fullPictureElement.querySelector('.social__comment-count');
+const commentsElement = fullPictureElement.querySelector('.social__comments');
+const commentsLoaderElement = fullPictureElement.querySelector('.social__comments-loader');
+const exitButtonElement = fullPictureElement.querySelector('.big-picture__cancel');
+
+const createCommentTemplate = ({ name, avatar, message }) =>`
+  <li class="social__comment">
+    <img
+      class="social__picture"
+      src="${avatar}"
+      alt="${name}"
+      width="35" height="35">
+    <p class="social__text">${message}</p>
+  </li>
+`;
 
 const renderFullPicture = ({ url, likes, description }) => {
-  const picture = fullPicture.querySelector('.big-picture__img img');
+  const picture = fullPictureElement.querySelector('.big-picture__img img');
   picture.src = url;
   picture.alt = description;
 
-  fullPicture.querySelector('.social__caption').textContent = description;
-  fullPicture.querySelector('.likes-count').textContent = likes;
+  fullPictureElement.querySelector('.social__caption').textContent = description;
+  fullPictureElement.querySelector('.likes-count').textContent = likes;
 };
 
 const renderComments = () => {
-  const visibleComments = allComments.slice(0, commentsToShow);
+  const visibleComments = comments.slice(0, commentsToShow);
 
-  commentList.innerHTML = visibleComments
+  commentsElement.innerHTML = visibleComments
     .map((comment) => createCommentTemplate(comment))
     .join('');
 
-  commentCount.textContent = `${visibleComments.length} из ${allComments.length} комментариев`;
+  commentCountElement.textContent = `${visibleComments.length} из ${comments.length} комментариев`;
 
-  if (visibleComments.length < allComments.length) {
-    commentsLoader.classList.remove('hidden');
+  if (visibleComments.length < comments.length) {
+    commentsLoaderElement.classList.remove('hidden');
   } else {
-    commentsLoader.classList.add('hidden');
+    commentsLoaderElement.classList.add('hidden');
   }
 };
 
-const onShowMoreComments = () => {
+
+const onCommentsShowMore = () => {
   commentsToShow += COMMENTS_STEP;
   renderComments();
 };
@@ -54,28 +65,29 @@ const onDocumentEscKeydown = (evt) => {
 };
 
 function closeFullViewPopup() {
-  allComments = null;
+  comments = null;
   commentsToShow = COMMENTS_STEP;
 
-  fullPicture.classList.add('hidden');
-  commentCount.classList.add('hidden');
+  fullPictureElement.classList.add('hidden');
+  commentCountElement.classList.add('hidden');
   bodyElement.classList.remove('modal-open');
 
-  exitButton.removeEventListener('click', onCloseBtnClick);
+  exitButtonElement.removeEventListener('click', onCloseBtnClick);
+  commentsLoaderElement.removeEventListener('click', onCommentsShowMore);
   document.removeEventListener('keydown', onDocumentEscKeydown);
 }
 
 export const openFullViewPopup = (picture) => {
-  allComments = picture.comments;
+  comments = picture.comments;
 
   renderFullPicture(picture);
   renderComments();
 
-  fullPicture.classList.remove('hidden');
-  commentCount.classList.remove('hidden');
+  fullPictureElement.classList.remove('hidden');
+  commentCountElement.classList.remove('hidden');
   bodyElement.classList.add('modal-open');
 
-  exitButton.addEventListener('click', onCloseBtnClick);
-  commentsLoader.addEventListener('click', onShowMoreComments);
+  exitButtonElement.addEventListener('click', onCloseBtnClick);
+  commentsLoaderElement.addEventListener('click', onCommentsShowMore);
   document.addEventListener('keydown', onDocumentEscKeydown);
 };

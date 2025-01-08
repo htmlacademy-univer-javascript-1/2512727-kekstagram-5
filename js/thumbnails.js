@@ -1,13 +1,22 @@
 import { openFullViewPopup } from './full-picture-popup.js';
-import { createPictureTemplate } from './templates.js';
 
 const PICTURE_SELECTOR = '.picture';
 const PICTURES_SELECTOR = '.pictures';
 
 let pictures = null;
-const picturesContainer = document.querySelector(PICTURES_SELECTOR);
+const picturesContainerElement = document.querySelector(PICTURES_SELECTOR);
 
-const onPicturesContainerElementClick = (evt) => {
+const createPictureTemplate = ({ id, url, description, likes, comments }) => `
+  <a href="#" data-id="${id}" class="picture">
+    <img class="picture__img" src="${url}" width="182" height="182" alt="${description}">
+    <p class="picture__info">
+      <span class="picture__comments">${comments.length}</span>
+      <span class="picture__likes">${likes}</span>
+    </p>
+  </a>
+`;
+
+const onPicturesContainerClick = (evt) => {
   const targetElement = evt.target.closest(PICTURE_SELECTOR);
 
   if (targetElement) {
@@ -24,14 +33,14 @@ export const renderPictures = (data) => {
 
   pictures = data.slice();
   if (pictures) {
-    picturesContainer.insertAdjacentHTML(
+    picturesContainerElement.insertAdjacentHTML(
       'afterbegin',
       pictures.map((picture) => createPictureTemplate(picture)).join('')
     );
 
-    picturesContainer.addEventListener(
+    picturesContainerElement.addEventListener(
       'click',
-      onPicturesContainerElementClick
+      onPicturesContainerClick
     );
   }
 };
